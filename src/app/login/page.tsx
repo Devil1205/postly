@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Login() {
   interface SignupInterface {
@@ -36,8 +38,16 @@ export default function Login() {
     console.log("login", values);
   };
 
-  const handleSignup = (values: SignupInterface) => {
-    console.log("signup", values);
+  const handleSignup = async (values: SignupInterface) => {
+    try {
+      console.log("signup", values);
+      const { data } = await axios.post("/api/auth/signup", {
+        body: values,
+      });
+      toast.success(data?.message);
+    } catch (error: any) {
+      toast.error(error.data.message);
+    }
   };
 
   return (
