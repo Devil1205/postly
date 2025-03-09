@@ -6,23 +6,15 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { UserLoginInterface, UserSignupInterface } from "@/lib/interface";
 
 export default function Login() {
-  interface SignupInterface {
-    fullName: String;
-    email: String;
-    password: String;
-  }
-  interface LoginInterface {
-    email: String;
-    password: String;
-  }
-
   const [isLogin, setIsLogin] = useState(true);
 
   const signupSchema = Yup.object({
-    fullName: Yup.string().required("Name is required"),
+    name: Yup.string().required("Name is required"),
     email: Yup.string().email("Invalid Email").required("Email is required"),
+    username: Yup.string().required("Username is required"),
     password: Yup.string().required("Password is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password")], "Passwords must match")
@@ -34,19 +26,29 @@ export default function Login() {
     password: Yup.string().required("Password is required"),
   });
 
-  const handleLogin = (values: LoginInterface) => {
-    console.log("login", values);
+  const handleLogin = async (
+    values: UserLoginInterface,
+    { resetForm }: any
+  ) => {
+    try {
+      const { data } = await axios.post("/api/auth/login", values);
+      toast.success(data?.message);
+      resetForm();
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
   };
 
-  const handleSignup = async (values: SignupInterface) => {
+  const handleSignup = async (
+    values: UserSignupInterface,
+    { resetForm }: any
+  ) => {
     try {
-      console.log("signup", values);
-      const { data } = await axios.post("/api/auth/signup", {
-        body: values,
-      });
+      const { data } = await axios.post("/api/auth/signup", values);
       toast.success(data?.message);
+      resetForm();
     } catch (error: any) {
-      toast.error(error.data.message);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -98,7 +100,7 @@ export default function Login() {
                   <div className="mb-2">
                     <Field
                       type="email"
-                      placeholder="Email"
+                      placeholder="Username or Email"
                       name="email"
                       className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
                     />
@@ -135,8 +137,9 @@ export default function Login() {
             <div className="w-full flex-shrink-0 p-4">
               <Formik
                 initialValues={{
-                  fullName: "",
+                  name: "",
                   email: "",
+                  username: "",
                   password: "",
                   confirmPassword: "",
                 }}
@@ -149,12 +152,12 @@ export default function Login() {
                     <div className="mb-2">
                       <Field
                         type="text"
-                        name="fullName"
+                        name="name"
                         placeholder="Full Name"
                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
                       />
                       <ErrorMessage
-                        name="fullName"
+                        name="name"
                         component="div"
                         className="text-red-500 text-sm mt-1 px-2"
                       />
@@ -170,6 +173,21 @@ export default function Login() {
                       />
                       <ErrorMessage
                         name="email"
+                        component="div"
+                        className="text-red-500 text-sm mt-1 px-2"
+                      />
+                    </div>
+
+                    {/* Username Field */}
+                    <div className="mb-2">
+                      <Field
+                        type="text"
+                        name="username"
+                        placeholder="Username"
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
+                      />
+                      <ErrorMessage
+                        name="username"
                         component="div"
                         className="text-red-500 text-sm mt-1 px-2"
                       />

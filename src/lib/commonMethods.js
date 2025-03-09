@@ -15,3 +15,9 @@ export const uploadImage = async (folder, file) => {
 
   return url; // Store this URL in MongoDB
 };
+
+export const storeTokenToCookies = async (cookies, token) => {
+  cookies.set("token", token, {
+    expires: Date.now() + process.env.COOKIE_EXPIRY * 24 * 60 * 60 * 1000,
+  });
+};
