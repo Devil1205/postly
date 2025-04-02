@@ -7,6 +7,8 @@ import AnimatedBackground1 from "./components/AnimatedBackground1";
 import { usePathname } from "next/navigation";
 import { metadata } from "./metadata";
 import { Toaster } from "react-hot-toast";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,14 +31,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Toaster position="top-right" reverseOrder={false} />
-        {pathname === "/login" && (
-          <div className="absolute inset-0 z-0">
-            <AnimatedBackground1 />
-          </div>
-        )}
-        <Navbar />
-        {children}
+        <Provider store={store}>
+          <Toaster position="top-right" reverseOrder={false} />
+          {pathname === "/login" && (
+            <div className="absolute inset-0 z-0">
+              <AnimatedBackground1 />
+            </div>
+          )}
+          <Navbar />
+          {children}
+        </Provider>
       </body>
     </html>
   );

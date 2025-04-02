@@ -7,9 +7,12 @@ import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { UserLoginInterface, UserSignupInterface } from "@/lib/interface";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true);
+  const dispatch = useDispatch();
 
   const signupSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -34,6 +37,7 @@ export default function Login() {
       const { data } = await axios.post("/api/auth/login", values);
       toast.success(data?.message);
       resetForm();
+      dispatch(setUser(data?.user));
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
@@ -47,6 +51,7 @@ export default function Login() {
       const { data } = await axios.post("/api/auth/signup", values);
       toast.success(data?.message);
       resetForm();
+      dispatch(setUser(data?.user));
     } catch (error: any) {
       toast.error(error.response.data.message);
     }

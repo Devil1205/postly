@@ -2,7 +2,6 @@ import { NextRequest, NextResponse as res } from "next/server";
 import User from "@/models/Users";
 import { UserLoginInterface } from "@/lib/interface";
 import { connect } from "@/db/connection";
-import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import { storeTokenToCookies } from "@/lib/commonMethods";
 
@@ -35,6 +34,7 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: "Login successful",
+        user
       },
       { status: 200 }
     );

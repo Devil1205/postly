@@ -27,13 +27,14 @@ export async function POST(req: NextRequest) {
     }
 
     // in no error, add user to db
-    await User.create(data);
+    const user = await User.create(data);
     await session.commitTransaction();
     session.endSession();
     return res.json(
       {
         success: true,
         message: "Registration successful",
+        user,
       },
       { status: 200 }
     );

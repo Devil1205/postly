@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -50,7 +50,12 @@ UserSchema.methods.generateAuthToken = async function () {
     email: this.email,
     username: this.username,
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+  const token = await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1d")
+    .sign(secret);
   return token;
 };
 
