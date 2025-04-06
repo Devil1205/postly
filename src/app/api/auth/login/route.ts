@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     await connect();
     const data: UserLoginInterface = await req.json();
     const user = await User.findOne({
-      $or: [{ email: data.email }, { username: data.username }],
+      $or: [{ email: data?.email }, { username: data?.username }],
     });
 
     // if no user found or password is incorrect, return error

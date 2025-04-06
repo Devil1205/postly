@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const publicRoutes = ["/dashboard", "/contact"];
+const publicRoutes = ["/", "/dashboard", "/contact"];
+const publicApiRoutes = ["/api/auth/signup", "/api/auth/login"];
 const authRoutes = ["/login"];
 
 export default async function middleware(req: NextRequest) {
@@ -9,7 +10,21 @@ export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname; // Correct way to get route
 
   if (pathname.startsWith("/api")) {
-    return NextResponse.next(); // Let API requests pass through without middleware
+    if (publicApiRoutes.includes(pathname)) {
+      return NextResponse.next(); // Let API requests pass through without middleware
+    }
+
+    // If it's an API route and not a public API route, verify the token
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+      const reqHeaders = new Headers(req.headers);
+      reqHeaders.set("x-user-id", payload.id as string);
+      return NextResponse.next(); // Token is valid, proceed
+    } catch (error) {
+      console.error("JWT verification failed", error);
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   // If user is logged in and trying to access auth routes, redirect to dashboard

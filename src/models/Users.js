@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema(
 
 UserSchema.methods.generateAuthToken = async function () {
   const payload = {
-    id: this._id,
+    id: this._id.toString(),
     email: this.email,
     username: this.username,
   };
