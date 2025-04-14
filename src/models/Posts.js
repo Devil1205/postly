@@ -9,33 +9,43 @@ const Post = new mongoose.Schema(
     images: [
       {
         type: String,
+        default: [],
       },
     ],
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        default: [],
       },
     ],
-    comments: [
-      {
-        comment: {
-          type: String,
-          required: [true, "Comment is required"],
+    comments: {
+      type: [
+        {
+          comment: {
+            type: String,
+            required: [true, "Comment is required"],
+          },
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
         },
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      },
-    ],
+      ],
+      default: [],
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    privacy: {
+      type: Boolean,
+      default: false,
+      comment: "true for private, false for public",
+    },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

@@ -56,10 +56,11 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
   try {
     await connect();
+    session = await mongoose.startSession();
+    session.startTransaction();
     const { id } = await params;
     const data = await req.json();
     const userId = req.headers.get("x-user-id");
@@ -104,8 +105,8 @@ export async function PATCH(
     );
   } catch (error: any) {
     // if any error occur, rollback changes from db
-    await session.abortTransaction();
-    session.endSession();
+    await session?.abortTransaction();
+    session?.endSession();
     return NextResponse.json(
       {
         success: false,
@@ -121,10 +122,11 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
   try {
     await connect();
+    session = await mongoose.startSession();
+    session.startTransaction();
     const { id } = await params;
     const userId = req.headers.get("x-user-id");
 
@@ -165,8 +167,8 @@ export async function DELETE(
     );
   } catch (error: any) {
     // if any error occur, rollback changes from db
-    await session.abortTransaction();
-    session.endSession();
+    await session?.abortTransaction();
+    session?.endSession();
     return NextResponse.json(
       {
         success: false,

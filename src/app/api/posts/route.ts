@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
   try {
     await connect();
 
-    const posts = await Posts.find();
+    const privacy = ["true", "1"].includes(
+      req.nextUrl.searchParams.get("privacy") || "false"
+    );
+    const posts = await Posts.find({ privacy });
 
     return NextResponse.json(
       {
@@ -30,10 +33,11 @@ export async function GET(req: NextRequest) {
 
 // create new post route
 export async function POST(req: NextRequest) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
   try {
     await connect();
+    session = await mongoose.startSession();
+    session.startTransaction();
     const data = await req.json();
 
     await Posts.create(data);
@@ -49,8 +53,8 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     // if any error occur, rollback changes from db
-    await session.abortTransaction();
-    session.endSession();
+    await session?.abortTransaction();
+    session?.endSession();
     return NextResponse.json(
       {
         success: false,

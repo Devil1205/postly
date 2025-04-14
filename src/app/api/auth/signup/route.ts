@@ -5,11 +5,12 @@ import { connect } from "@/db/connection";
 import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  let session;
   try {
     // connect db
     await connect();
+    session = await mongoose.startSession();
+    session.startTransaction();
     const data: UserSignupInterface = await req.json();
     const existingUser = await User.findOne({
       $or: [{ email: data.email }, { username: data.username }],
@@ -40,8 +41,8 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     // if any error occur, rollback changes from db
-    await session.abortTransaction();
-    session.endSession();
+    await session?.abortTransaction();
+    session?.endSession();
     return res.json(
       {
         success: false,

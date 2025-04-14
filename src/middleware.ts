@@ -20,7 +20,7 @@ export default async function middleware(req: NextRequest) {
       const { payload } = await jwtVerify(token, secret);
       const reqHeaders = new Headers(req.headers);
       reqHeaders.set("x-user-id", payload.id as string);
-      return NextResponse.next(); // Token is valid, proceed
+      return NextResponse.next({request: {headers: reqHeaders}}); // Token is valid, proceed
     } catch (error) {
       console.error("JWT verification failed", error);
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

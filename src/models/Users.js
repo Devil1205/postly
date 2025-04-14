@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: false,
       unique: true,
+      sparse: true,
     },
     password: {
       type: String,
@@ -38,6 +39,27 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    followRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields automatically
